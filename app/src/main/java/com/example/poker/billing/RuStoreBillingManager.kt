@@ -18,7 +18,7 @@ object RuStoreBillingManager {
     const val PRODUCT_ID_FULL_ACCESS = "full_access_unlock"
     
     // Deeplink scheme for banking applications (SBP/T-Pay/Mir) redirect back to app
-    const val DEEPLINK_SCHEME = "pokerpay"
+    const val DEEPLINK_SCHEME = "ru.mazitov.poker.replayer"
 
     // RuStore Console Application ID placeholder (configure in RuStore developer console)
     private const val DEFAULT_CONSOLE_APP_ID = "poker_replayer_rustore"
@@ -75,7 +75,6 @@ object RuStoreBillingManager {
         onResult: (Boolean) -> Unit
     ) {
         val prefs = ReplayerPreferences(context)
-        // If already cached as purchased locally, keep it unlocked
         if (prefs.isFullAccessPurchased) {
             onResult(true)
             return
@@ -138,100 +137,45 @@ object RuStoreBillingManager {
         if (client == null) {
             onResult(
                 false,
-                "Сервис оплаты RuStore недоступен на данном устройстве."
+                "Платёжный клиент RuStore не инициализирован. Проверьте подключение к сети."
             )
             return
         }
 
         try {
-            client.purchases.purchaseProduct(productId = productId)
+            client.purchases.purchaseProduct(
+                productId = productId,
+                quantity = 1,
+                developerPayload = null
+            )
                 .addOnSuccessListener { paymentResult ->
                     when (paymentResult) {
                         is PaymentResult.Success -> {
-                            Log.d(TAG, "Purchase succeeded: orderId=${paymentResult.orderId}, invoiceId=${paymentResult.invoiceId}")
-                            // Confirm purchase if needed and persist locally
-                            try {
-                                client.purchases.confirmPurchase(paymentResult.purchaseId)
-                            } catch (_: Throwable) {
-                                // Ignore confirm errors
-                            }
+                            Log.d(TAG, "Payment successful: purchaseId=${paymentResult.purchaseId}")
                             prefs.isFullAccessPurchased = true
                             onResult(true, null)
                         }
                         is PaymentResult.Cancelled -> {
-                            Log.d(TAG, "Purchase cancelled by user")
-                            onResult(false, "Покупка отменена")
+                            Log.d(TAG, "Payment cancelled by user")
+                            onResult(false, "Оплата отменена пользователем")
                         }
                         is PaymentResult.Failure -> {
-                            Log.e(TAG, "Purchase failed: code=${paymentResult.errorCode}")
-                            onResult(false, "Ошибка оплаты (код: ${paymentResult.errorCode ?: "ошибка"})")
-                        }
-                        is PaymentResult.InvalidPaymentState -> {
-                            Log.w(TAG, "Purchase invalid payment state")
-                            onResult(false, "Некорректное состояние платежа")
+                            Log.w(TAG, "Payment failure: ${paymentResult.purchaseId}")
+                            onResult(false, "Ошибка платежа. Попробуйте снова.")
                         }
                         else -> {
-                            Log.w(TAG, "Unknown payment result: $paymentResult")
-                            onResult(false, "Неизвестный результат платежа")
+                            Log.d(TAG, "Payment in other state")
+                            onResult(false, null)
                         }
-                    }
-                }
-                .addOnFailureListener { throwable ->
-                    Log.e(TAG, "purchaseProduct exception: ${throwable.message}", throwable)
-                    onResult(false, "Ошибка RuStore: ${throwable.message ?: "Не удалось начать оплату"}")
-                }
-        } catch (e: Throwable) {
-            Log.e(TAG, "Exception initiating purchase: ${e.message}", e)
-            onResult(false, "Исключение при покупке: ${e.message}")
-        }
-    }
-
-    /**
-     * Restore purchases for user (required by store policies).
-     */
-    fun restorePurchases(
-        context: Context,
-        onResult: (isSuccess: Boolean, message: String) -> Unit
-    ) {
-        val prefs = ReplayerPreferences(context)
-        if (prefs.isFullAccessPurchased) {
-            onResult(true, "Полный доступ уже активен на данном устройстве.")
-            return
-        }
-
-        if (!isRuStoreInstalled(context)) {
-            onResult(
-                false,
-                "Приложение RuStore не установлено на данном устройстве."
-            )
-            return
-        }
-
-        val client = billingClient
-        if (client == null) {
-            onResult(false, "Не удалось связаться с RuStore. Проверьте подключение к сети.")
-            return
-        }
-
-        try {
-            client.purchases.getPurchases()
-                .addOnSuccessListener { purchases ->
-                    val isPurchased = purchases.any { purchase ->
-                        purchase.productId == PRODUCT_ID_FULL_ACCESS &&
-                            (purchase.purchaseState == PurchaseState.PAID || purchase.purchaseState == PurchaseState.CONFIRMED)
-                    }
-                    if (isPurchased) {
-                        prefs.isFullAccessPurchased = true
-                        onResult(true, "Покупка успешно найдена и восстановлена! Полный доступ открыт.")
-                    } else {
-                        onResult(false, "Активных покупок для аккаунта RuStore не найдено.")
                     }
                 }
                 .addOnFailureListener { error ->
-                    onResult(false, "Ошибка восстановления: ${error.message ?: "Сервер RuStore недоступен"}")
+                    Log.e(TAG, "purchaseProduct failed: ${error.message}", error)
+                    onResult(false, "Ошибка при оформлении покупки: ${error.localizedMessage ?: "Неизвестная ошибка"}")
                 }
         } catch (e: Throwable) {
-            onResult(false, "Ошибка: ${e.message}")
+            Log.e(TAG, "Exception during purchase: ${e.message}", e)
+            onResult(false, "Исключение при покупке: ${e.message}")
         }
     }
 }

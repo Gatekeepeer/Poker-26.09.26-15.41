@@ -5,33 +5,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import com.example.poker.billing.RuStoreBillingManager
-import com.example.poker.ui.PokerReplayerScreen
-import com.example.poker.ui.PokerReplayerViewModel
-import com.example.ui.theme.MyApplicationTheme
+import com.example.poker.ui.MainScreen
+import com.example.poker.ui.theme.PokerReplayerTheme
 
 class MainActivity : ComponentActivity() {
-
-    private val viewModel: PokerReplayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Initialize RuStore Billing SDK
+        RuStoreBillingManager.init(this)
+
         setContent {
-            MyApplicationTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    PokerReplayerScreen(viewModel = viewModel)
-                }
+            PokerReplayerTheme {
+                MainScreen()
             }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // Handle RuStore billing redirect deeplink
         RuStoreBillingManager.onNewIntent(intent)
     }
 }

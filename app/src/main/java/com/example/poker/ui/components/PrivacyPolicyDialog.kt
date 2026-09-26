@@ -1,5 +1,7 @@
 package com.example.poker.ui.components
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,16 +17,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,6 +40,9 @@ import androidx.compose.ui.window.Dialog
 fun PrivacyPolicyDialog(
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val webPolicyUrl = "https://cloud.mail.ru/public/LUdN/CXjxPp9b9"
+
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(18.dp),
@@ -48,11 +56,13 @@ fun PrivacyPolicyDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 12.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Shield,
@@ -67,8 +77,6 @@ fun PrivacyPolicyDialog(
                         fontWeight = FontWeight.Bold
                     )
                 }
-
-                Spacer(modifier = Modifier.height(14.dp))
 
                 Column(
                     modifier = Modifier
@@ -130,21 +138,51 @@ fun PrivacyPolicyDialog(
 
                     PolicySection(
                         title = "10. Контакты",
-                        body = "По вопросам, связанным с настоящей Политикой конфиденциальности, вы можете связаться с Разработчиком:\n• Разработчик: ИП Мазитов Марат Гафурович\n• ИНН: 235306395455\n• Email: mazitov_expert@mail.ru"
+                        body = "По вопросам, связанным с настоящей Политикой конфиденциальности, вы можете связаться с Разработчиком:\n• Разработчик: ИП Мазитов Марат Гафурович\n• ИНН: 235306395455\n• Email: mazitov_expert@mail.ru\n• Веб-версия: $webPolicyUrl"
                     )
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF0284C7)
-                    ),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth().height(42.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Понятно", fontWeight = FontWeight.Bold)
+                    OutlinedButton(
+                        onClick = {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webPolicyUrl))
+                                context.startActivity(intent)
+                            } catch (_: Exception) {}
+                        },
+                        border = BorderStroke(1.dp, Color(0xFF38BDF8)),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(42.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.OpenInNew,
+                            contentDescription = "Веб-версия",
+                            tint = Color(0xFF38BDF8),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Веб-версия", color = Color(0xFF38BDF8), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
+
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF0284C7)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(42.dp)
+                    ) {
+                        Text("Понятно", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    }
                 }
             }
         }
