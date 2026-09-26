@@ -1,0 +1,59 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Table Felt Green Background -->
+    <path
+        android:fillColor="#0D3826"
+        android:pathData="M 0,0 h 108 v 108 h -108 z" />
+
+    <!-- 1. White Ace of Spades Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 53,26 C 53,26 31,43 31,56 C 31,64 38.5,68 47.5,66 C 50,65.3 51.8,63.2 53,61.8 C 54.2,63.2 56,65.3 58.5,66 C 67.5,68 75,64 75,56 C 75,43 53,26 53,26 Z" />
+
+    <!-- 2. White Spade Stem/Base -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 50.5,61 C 50.5,68 46,72.5 43,76.5 L 63,76.5 C 60,72.5 55.5,68 55.5,61 Z" />
+
+    <!-- 3. Magnifying Glass Handle Dark Gap (Table Felt Green) -->
+    <path
+        android:strokeColor="#0D3826"
+        android:strokeWidth="8.5"
+        android:strokeLineCap="round"
+        android:pathData="M 60.5,58 L 76.5,74" />
+
+    <!-- 4. Magnifying Glass Lens Outer Dark Gap (Table Felt Green) -->
+    <path
+        android:strokeColor="#0D3826"
+        android:strokeWidth="4.5"
+        android:pathData="M 36,49 a 15.5,15.5 0 1,0 31,0 a 15.5,15.5 0 1,0 -31,0" />
+
+    <!-- 5. Magnifying Glass Inner Dark Gap (Table Felt Green) -->
+    <path
+        android:strokeColor="#0D3826"
+        android:strokeWidth="3.2"
+        android:pathData="M 42,49 a 9.5,9.5 0 1,0 19,0 a 9.5,9.5 0 1,0 -19,0" />
+
+    <!-- 6. Magnifying Glass White Outer Lens Rim -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.0"
+        android:pathData="M 38.5,49 a 13,13 0 1,0 26,0 a 13,13 0 1,0 -26,0" />
+
+    <!-- 7. Magnifying Glass White Inner Lens Ring -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:pathData="M 44.5,49 a 7,7 0 1,0 14,0 a 7,7 0 1,0 -14,0" />
+
+    <!-- 8. Magnifying Glass White Handle -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5.0"
+        android:strokeLineCap="round"
+        android:pathData="M 60.5,58 L 75.5,73" />
+</vector>

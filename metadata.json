@@ -1,0 +1,8 @@
+{
+  "name": "Разбор рук 26.09.26 15:40",
+  "description": "Реплеер покерных раздач турниров GGPoker с пошаговым воспроизведением, позициями и расчетом в BB",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
